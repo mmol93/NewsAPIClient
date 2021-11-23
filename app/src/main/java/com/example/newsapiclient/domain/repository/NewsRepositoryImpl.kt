@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class NewsRepositoryImpl(private val newsRemoteDataSource: NewsRemoteDataSource) : NewsRepository {
-    override suspend fun getNewsHeadlines(): Resource<APIResponse> {
+    override suspend fun getNewsHeadlines(country:String, page:Int): Resource<APIResponse> {
         // responseToResource()로 통신 결과를 확인한다
-        return responseToResource(newsRemoteDataSource.getTopHeadlines())
+        return responseToResource(newsRemoteDataSource.getTopHeadlines(country, page))
     }
 
     // 우리가 만든 Resource 클래스를 사용하여 통신 결과를 반환하도록 만든다
