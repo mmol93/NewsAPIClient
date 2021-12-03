@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
@@ -20,6 +20,6 @@
         android:id="@+id/bnv_news"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:menu="@menu/bottom_menu"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        app:menu="@menu/bottom_menu" />
 </LinearLayout>
