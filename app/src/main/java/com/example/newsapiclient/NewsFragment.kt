@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.Toast
 import androidx.core.view.isGone
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapiclient.data.util.Resource
@@ -41,6 +42,13 @@ class NewsFragment : Fragment() {
         // MainActivity에서 사용중인 객체를 그대로 들고온다
         viewModel= (activity as MainActivity).viewModel
         newsAdapter= (activity as MainActivity).newsAdapter
+        newsAdapter.setOnItemClickListener {
+            val bundle = Bundle().apply {
+                putSerializable("selected_article", it)
+            }
+            findNavController().navigate(R.id.action_newsFragment_to_infoFragment,
+            bundle)
+        }
         initRecyclerView()
         viewNewsList()
     }
