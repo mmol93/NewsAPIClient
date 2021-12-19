@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.navigation.fragment.findNavController
@@ -16,6 +17,9 @@ import com.example.newsapiclient.data.util.Resource
 import com.example.newsapiclient.databinding.FragmentNewsBinding
 import com.example.newsapiclient.presentation.adapter.NewsAdapter
 import com.example.newsapiclient.presentation.viewModel.NewsViewModel
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NewsFragment : Fragment() {
     private lateinit var viewModel: NewsViewModel
@@ -51,6 +55,69 @@ class NewsFragment : Fragment() {
         }
         initRecyclerView()
         viewNewsList()
+        setSearchView()
+    }
+    // search function
+    private fun setSearchView(){
+        fragmentNewsBinding.searchView.setOnQueryTextListener(
+            object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                viewModel.searchNews("kr", p0.toString(), page)
+                viewSearchedNews()
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                MainScope().launch {
+                    delay(3000)
+                    viewModel.searchNews("kr", p0.toString(), page)
+                    viewSearchedNews()
+
+                }
+                return false
+            }
+        })
+        fragmentNewsBinding.searchView.setOnCloseListener {
+            initRecyclerView()
+            viewNewsList()
+            false
+        }
+    }
+    fun viewSearchedNews(){
+        if (view != null){
+            viewModel.searchedNews.observe(viewLifecycleOwner, { response ->
+                when (response) {
+                    is Resource.Success -> {
+                        hideProgressBar()
+                        response.data?.let {
+                            newsAdapter.differ.submitList(it.articles.toList())
+                            // 검색결과 나온 기사의 갯수가 20개인지 아닌지 확인
+                            // totalResults: 모든 기사의 갯수가 나와있음
+                            // totalResults가 20으로 나눠진다? = 마지막 페이지임
+                            if (it.totalResults%20 == 0){
+                                lastPages = it.totalResults/20
+                            }
+                            // 20개 아님 20으로 나눈거에 +1한게 마지막 페이지임
+                            else{
+                                lastPages = it.totalResults/20 + 1
+                            }
+                            isLastPage = page == lastPages
+                        }
+                    }
+                    is Resource.Error -> {
+                        hideProgressBar()
+                        response.message?.let {
+                            Toast.makeText(activity, "An error occurred: $it", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                    is Resource.Loading -> {
+                        showProgressBar()
+                    }
+                }
+            })
+
+        }
     }
 
     private fun initRecyclerView() {

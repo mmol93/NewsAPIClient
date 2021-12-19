@@ -2,6 +2,7 @@ package com.example.newsapiclient.presentation.di
 
 import com.example.newsapiclient.domain.repository.NewsRepository
 import com.example.newsapiclient.domain.usecase.GetNewsHeadLinesUseCase
+import com.example.newsapiclient.domain.usecase.GetSearchedNewsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,5 +18,13 @@ class UseCaseModule {
         newsRepository: NewsRepository
     ): GetNewsHeadLinesUseCase {
         return GetNewsHeadLinesUseCase(newsRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetSearchedNewsUseCase(
+        newsRepository: NewsRepository
+    ): GetSearchedNewsUseCase {
+        return GetSearchedNewsUseCase(newsRepository)
     }
 }
